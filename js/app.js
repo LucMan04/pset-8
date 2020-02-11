@@ -24,7 +24,13 @@ let tieCount = 0;
 
 const squares = Array.from(document.querySelectorAll("#board div"));
 const message = document.querySelector("h2");
-const winCount = document.getElementById("winCount");
+// const winCount = document.getElementById("winCount");
+// const messagePartOne = document.getElementById("messagePartOne");
+const xButton = document.getElementById("x-button");
+// const messagePartTwo = document.getElementById("messagePartTwo");
+const oButton = document.getElementById("o-button");
+// const messagePartThree = document.getElementById("messagePartThree");
+const messageInit = document.getElementById("page-header");
 
 ///////////////////// EVENT LISTENERS ///////////////////////////////
 
@@ -33,17 +39,30 @@ window.onload = init;
 document.getElementById("board").onclick = takeTurn;
 document.getElementById("reset-button").onclick = init;
 document.getElementById("win-reset").onclick = reset;
-document.getElementById("x-button").onclick = setTurn("X");
-document.getElementById("o-button").onclick = setTurn("O");
+xButton.onclick = setTurn;
+oButton.onclick = setTurn;
 
 ///////////////////// FUNCTIONS /////////////////////////////////////
 
+//this runs first
 function init() {
-  board = ["", "", "", "", "", "", "", "", ""];
-  message.innerHTML = "Turn: X or O?"
+  for (let b of squares) {
+    b.textContent = null;
+  }
+  turn = null;
+  board = ["", "", "", "", "", "", "", "", ""]; /*this one is the actual board*/
+  console.log(messageInit);
+  message.textContent = messageInit;
+  // message.appendChild(messagePartOne);
+  // message.appendChild(xButton);
+  // message.appendChild(messagePartTwo);
+  // message.appendChild(oButton);
+  // message.appendChild(messagePartThree); /*this whole setup is so janky but it works*/
   win = null;
 
+  if (turn) {
     render();
+  }
 }
 
 function render() {
@@ -51,24 +70,34 @@ function render() {
     squares[index].textContent = mark;
   });
 
+  messagePartOne.remove();
+  xButton.remove();
+  messagePartTwo.remove();
+  oButton.remove();
+  messagePartThree.remove();
+
   message.textContent =
-    win === "T" ? "It's a tie!" : win ? `${win} wins!` : `Turn: ${turn}`;
+    win === "T" ? "It's a tie!"
+      : win ? `${win} wins!` : `Turn: ${turn}`;
   winCount.textContent = `X: ${xWin} | O: ${oWin} | Tie: ${tieCount}`
 }
 
+//this is the one that runs when the user clicks a square
 function takeTurn(e) {
-  if (!win) {
-    let index = squares.findIndex(function(square) {
-      return square === e.target;
-    });
+  if(turn) {
+    if (!win) {
+      let index = squares.findIndex(function(square) {
+        return square === e.target;
+      });
 
-    if (board[index] === "") {
-      board[index] = turn;
-      turn = turn === "X" ? "O" : "X";
-      win = getWinner();
+      if (board[index] === "") {
+        board[index] = turn;
+        turn = turn === "X" ? "O" : "X";
+        win = getWinner();
 
-      updateWins(win)
-      render();
+        updateWins(win)
+        render();
+      }
     }
   }
 }
@@ -89,6 +118,7 @@ function getWinner() {
   return winner ? winner : board.includes("") ? null : "T";
 }
 
+//these are the ones I added
 function updateWins(a) {
   if (a === "X") {
     xWin++
@@ -107,5 +137,6 @@ function reset() {
 }
 
 function setTurn(f) {
-  turn = f
+  turn = f.target.id.charAt(0).toUpperCase(); /*"X" or "O"*/
+  message.textContent = `Turn: ${turn}`;
 }
