@@ -1,5 +1,4 @@
 ///////////////////// CONSTANTS /////////////////////////////////////
-
 const winningConditions = [
   [0, 1, 2],
   [3, 4, 5],
@@ -11,93 +10,66 @@ const winningConditions = [
   [2, 4, 6]
 ];
 
-///////////////////// APP STATE (VARIABLES) /////////////////////////
 
+///////////////////// APP STATE (VARIABLES) /////////////////////////
 let board;
 let turn;
 let win;
-let xWin = 0;
-let oWin = 0;
-let tieCount = 0;
+let xWins = 0;
+let oWins = 0;
+let firstPlayer;
 
 ///////////////////// CACHED ELEMENT REFERENCES /////////////////////
-
 const squares = Array.from(document.querySelectorAll("#board div"));
 const message = document.querySelector("h2");
-// const winCount = document.getElementById("winCount");
-// const messagePartOne = document.getElementById("messagePartOne");
-const xButton = document.getElementById("x-button");
-// const messagePartTwo = document.getElementById("messagePartTwo");
-const oButton = document.getElementById("o-button");
-// const messagePartThree = document.getElementById("messagePartThree");
-const messageInit = document.getElementById("page-header");
 
 ///////////////////// EVENT LISTENERS ///////////////////////////////
-
 window.onload = init;
-
 document.getElementById("board").onclick = takeTurn;
 document.getElementById("reset-button").onclick = init;
-document.getElementById("win-reset").onclick = reset;
-xButton.onclick = setTurn;
-oButton.onclick = setTurn;
+document.getElementById("x_turn").onclick = xStarts;
+document.getElementById("o_turn").onclick = oStarts;
 
 ///////////////////// FUNCTIONS /////////////////////////////////////
 
-//this runs first
 function init() {
-  for (let b of squares) {
-    b.textContent = null;
-  }
-  turn = null;
-  board = ["", "", "", "", "", "", "", "", ""]; /*this one is the actual board*/
-  console.log(messageInit);
-  message.textContent = messageInit;
-  // message.appendChild(messagePartOne);
-  // message.appendChild(xButton);
-  // message.appendChild(messagePartTwo);
-  // message.appendChild(oButton);
-  // message.appendChild(messagePartThree); /*this whole setup is so janky but it works*/
+  board = [
+    "", "", "",
+    "", "", "",
+    "", "", "",
+  ]
+  turn = "x"
   win = null;
-
-  if (turn) {
-    render();
+    if (turnCount == 1) {
+    console.log("x")
+    turn = "x"
   }
+  else if (turnCount == 0) {
+    console.log("o")
+    turn = "o"
+  }
+  render();
 }
 
 function render() {
   board.forEach(function(mark, index) {
     squares[index].textContent = mark;
-  });
-
-  messagePartOne.remove();
-  xButton.remove();
-  messagePartTwo.remove();
-  oButton.remove();
-  messagePartThree.remove();
-
-  message.textContent =
-    win === "T" ? "It's a tie!"
-      : win ? `${win} wins!` : `Turn: ${turn}`;
-  winCount.textContent = `X: ${xWin} | O: ${oWin} | Tie: ${tieCount}`
+  })
+    message.textContent =
+    win === "T" ? "it's a tie!" : win ? `${win} wins!` : `turn: ${turn}`;
 }
 
-//this is the one that runs when the user clicks a square
 function takeTurn(e) {
-  if(turn) {
-    if (!win) {
-      let index = squares.findIndex(function(square) {
-        return square === e.target;
-      });
+  if (!win) {
+    let index = squares.findIndex(function(square) {
+      return square === e.target;
+    });
 
-      if (board[index] === "") {
-        board[index] = turn;
-        turn = turn === "X" ? "O" : "X";
-        win = getWinner();
-
-        updateWins(win)
-        render();
-      }
+    if (board[index] === "") {
+      board[index] = turn;
+      turn = turn === "x" ? "o" : "x";
+      win = getWinner();
+      render();
     }
   }
 }
@@ -112,31 +84,25 @@ function getWinner() {
       board[condition[1]] === board[condition[2]]
     ) {
       winner = board[condition[0]];
+      if (winner == "x") {
+        xWins++
+        xCounter.innerHTML = xWins
+      } else if (winner == "o") {
+        oWins++
+        oCounter.innerHTML = oWins
+      }
     }
   });
 
   return winner ? winner : board.includes("") ? null : "T";
 }
 
-//these are the ones I added
-function updateWins(a) {
-  if (a === "X") {
-    xWin++
-  } else if (a === "O") {
-    oWin++
-  } else if (a === "T") {
-    tieCount++
-  }
+function xStarts() {
+  turn_counter = 1
+  console.log("1")
 }
 
-function reset() {
-  xWin = 0;
-  oWin = 0;
-  tieCount = 0;
-  winCount.textContent = "X: 0 | O: 0 | Tie: 0";
-}
-
-function setTurn(f) {
-  turn = f.target.id.charAt(0).toUpperCase(); /*"X" or "O"*/
-  message.textContent = `Turn: ${turn}`;
+function oStars() {
+  turn_counter = 0
+  console.log("0")
 }
